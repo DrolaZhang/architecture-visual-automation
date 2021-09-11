@@ -1,1 +1,5 @@
-check connection
+Functions:
+1 List all class's fields, methods
+2 Get all class's reference relationship
+3 Use networkx graph draw relationships among classes, which can zoom in to check class's details, and highlight references of selected class, or remove no-related classes.
+4 Support search by class name, class field values and so on.
