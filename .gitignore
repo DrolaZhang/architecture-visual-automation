@@ -1,3 +1,5 @@
 .idea/
 /venv/
 nx.html
+result
+__pycache__/
