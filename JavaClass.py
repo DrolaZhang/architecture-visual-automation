@@ -9,9 +9,8 @@ def get_imports(imports):
 
 
 def get_inner_classes(declaration):
-    print(declaration)
-    print('ClassDeclaration name: ' + str(declaration.name))
-    print('ClassDeclaration body: ' + str(declaration.body))
+    a = JavaClass(declaration.body, None)
+    return a
 
 
 def get_constructors(declaration):
@@ -43,15 +42,14 @@ def get_field(declaration):
 
 
 class JavaClass:
-    fields = []
-    imports = []
-    constructors = []
-    methods = []
-    inner_classes = []
 
-    def __init__(self, tree):
-        self.imports = get_imports(tree.imports)
-        for declaration in tree.types[0].body:
+    def __init__(self, body, imports):
+        self.fields = []
+        self.constructors = []
+        self.methods = []
+        self.inner_classes = []
+        self.imports = imports
+        for declaration in body:
             if isinstance(declaration, javalang.tree.FieldDeclaration):
                 self.fields.append(get_field(declaration))
             elif isinstance(declaration, javalang.tree.ConstructorDeclaration):
