@@ -1,4 +1,5 @@
 import javalang
+import json
 
 from JavaClass import JavaClass
 
@@ -20,5 +21,7 @@ def parse_class(java_class):
         print(java_class.fields)
 
 
-java_class = JavaClass(body, imports)
-parse_class(java_class)
+java_class = JavaClass(tree.types[0].name, body, imports, tree.package)
+# parse_class(java_class)
+# print(java_class.toJSON())
+print(json.dumps(java_class))

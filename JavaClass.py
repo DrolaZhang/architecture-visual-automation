@@ -1,17 +1,10 @@
+
 import javalang
+import json
 
 
-def get_imports(imports):
-    imports = []
-    for import_f in imports:
-        imports.append(import_f)
-    return imports
-
-
-def get_inner_classes(declaration):
-    a = JavaClass(declaration.body, None)
-    return a
-
+def get_inner_classes(declaration, package):
+    return JavaClass(declaration.name, declaration.body, None, package)
 
 def get_constructors(declaration):
     constructor_modifiers = str(declaration.modifiers)
@@ -43,12 +36,17 @@ def get_field(declaration):
 
 class JavaClass:
 
-    def __init__(self, body, imports):
+    def __init__(self, name, body, imports, package):
+        self.name = name
         self.fields = []
         self.constructors = []
         self.methods = []
         self.inner_classes = []
         self.imports = imports
+        if package is None:
+            self.package = str(None)
+        else:
+            self.package = package.name
         for declaration in body:
             if isinstance(declaration, javalang.tree.FieldDeclaration):
                 self.fields.append(get_field(declaration))
@@ -57,7 +55,11 @@ class JavaClass:
             elif isinstance(declaration, javalang.tree.MethodDeclaration):
                 self.methods.append(get_methods(declaration))
             elif isinstance(declaration, javalang.tree.ClassDeclaration):
-                self.inner_classes.append(get_inner_classes(declaration))
+                self.inner_classes.append(get_inner_classes(declaration, package))
+
+    def tojson(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
+
 
 
 def parse_declaration_value(value):
