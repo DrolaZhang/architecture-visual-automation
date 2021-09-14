@@ -3,25 +3,15 @@ import json
 
 from JavaClass import JavaClass
 
-f = open('C:\\Users\\drola\\IdeaProjects\\leetcode\\interview\\src\\main\\java\\SubSequence.java')
+f = open('C:\\Users\\drola\\IdeaProjects\\apollo-master\\apollo-portal\\src\\main\\java\\com\\ctrip\\framework\\apollo\\portal\\spi\\configuration\\LdapExtendProperties.java')
 tree = javalang.parse.parse(f.read())
-body = tree.types[0].body
+class_whole = tree.types[0]
 imports = tree.imports
+package = tree.package
+name = class_whole.name
+body = class_whole.body
+extends = class_whole.extends
+implements = class_whole.implements
 
-
-def parse_class(java_class):
-    print(java_class.imports)
-    print(java_class.methods)
-    print(java_class.constructors)
-    print(java_class.fields)
-    for inner_class in java_class.inner_classes:
-        print(inner_class.imports)
-        print(inner_class.methods)
-        print(inner_class.constructors)
-        print(java_class.fields)
-
-
-java_class = JavaClass(tree.types[0].name, body, imports, tree.package)
-# parse_class(java_class)
-# print(java_class.toJSON())
-print(json.dumps(java_class))
+java_class = JavaClass(name, body, extends, implements, imports, package)
+print(java_class)

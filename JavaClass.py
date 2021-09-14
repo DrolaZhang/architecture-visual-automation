@@ -1,10 +1,10 @@
-
 import javalang
 import json
 
 
 def get_inner_classes(declaration, package):
-    return JavaClass(declaration.name, declaration.body, None, package)
+    return JavaClass(declaration.name, declaration.body, None, None, None, package)
+
 
 def get_constructors(declaration):
     constructor_modifiers = str(declaration.modifiers)
@@ -34,32 +34,50 @@ def get_field(declaration):
     return field_annotation, field_modifiers, filed_type, field_name, field_value
 
 
+def get_import(imports):
+    for import_ in imports:
+        return import_.path if import_.wildcard is False else import_.path + '.*'
+
+
 class JavaClass:
 
-    def __init__(self, name, body, imports, package):
+    def __init__(self, name, body, extends, implements, imports, package):
         self.name = name
+        self.extends = extends
+        self.implements = implements
         self.fields = []
         self.constructors = []
         self.methods = []
         self.inner_classes = []
-        self.imports = imports
-        if package is None:
-            self.package = str(None)
-        else:
-            self.package = package.name
+        self.imports = []
+        self.package = None if package is None else package.name
+        if imports is not None:
+            self.imports.append(get_import(imports))
         for declaration in body:
             if isinstance(declaration, javalang.tree.FieldDeclaration):
-                self.fields.append(get_field(declaration))
+                # self.fields.append(get_field(declaration))
+                self.fields.append(declaration)
             elif isinstance(declaration, javalang.tree.ConstructorDeclaration):
-                self.constructors.append(get_constructors(declaration))
+                # self.constructors.append(get_constructors(declaration))
+                self.constructors.append(declaration)
             elif isinstance(declaration, javalang.tree.MethodDeclaration):
-                self.methods.append(get_methods(declaration))
+                # self.methods.append(get_methods(declaration))
+                self.methods.append(declaration)
             elif isinstance(declaration, javalang.tree.ClassDeclaration):
-                self.inner_classes.append(get_inner_classes(declaration, package))
+                # self.inner_classes.append(get_inner_classes(declaration, package))
+                self.inner_classes.append(declaration)
 
     def tojson(self):
         return json.dumps(self, default=lambda o: o.__dict__)
 
+    def __str__(self):
+        return json.dumps(self, cls=change_type, indent=4)
+
+
+def change_type(byte):
+    if isinstance(byte, bytes):
+        return str(byte, encoding='utf-8')
+    return json.JSONEncoder.default(byte)
 
 
 def parse_declaration_value(value):
@@ -69,6 +87,16 @@ def parse_declaration_value(value):
         return parse_method_invocation(value)
     elif isinstance(value, javalang.tree.ClassCreator):
         return parse_type(value.type) + str(value)
+    elif isinstance(value, javalang.tree.MemberReference):
+        return str(value)
+    elif isinstance(value, javalang.tree.ArrayInitializer):
+        return str(value)
+    elif isinstance(value, javalang.tree.ArrayCreator):
+        return str(value)
+    elif isinstance(value, javalang.tree.LambdaExpression):
+        return str(value)
+    elif isinstance(value, javalang.tree.ClassReference):
+        return str(value)
     elif value is None:
         return str(None)
     else:
@@ -98,16 +126,19 @@ def parse_argument(argument):
 
 
 def parse_method_invocation(method):
+    argu = ""
     for ref in method.arguments:
         if isinstance(ref, javalang.tree.ClassReference):
-            argu = ""
             for ref in method.arguments:
                 argu = argu + parse_class_reference(ref)
     return method.qualifier + '.' + method.member + " argu " + argu
 
 
 def parse_class_reference(refer):
-    return parse_type(refer.type)
+    if isinstance(refer, javalang.tree.MemberReference):
+        return str(refer)
+    else:
+        return parse_type(refer.type)
 
 
 def parse_parameter(parameters):
