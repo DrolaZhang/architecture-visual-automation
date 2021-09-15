@@ -67,17 +67,9 @@ class JavaClass:
                 # self.inner_classes.append(get_inner_classes(declaration, package))
                 self.inner_classes.append(declaration)
 
-    def tojson(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
-
     def __str__(self):
-        return json.dumps(self, cls=change_type, indent=4)
-
-
-def change_type(byte):
-    if isinstance(byte, bytes):
-        return str(byte, encoding='utf-8')
-    return json.JSONEncoder.default(byte)
+        return str(self.package) + str(self.imports) + str(self.extends) + str(self.implements) + str(self.fields) + str(
+            self.constructors) + str(self.methods) + str(self.inner_classes)
 
 
 def parse_declaration_value(value):
