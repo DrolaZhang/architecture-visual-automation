@@ -9,10 +9,10 @@ import os
 import javalang
 from JavaClass import JavaClass
 
-def getEdges():
+def getEdges(EGDE_VAR):
     nodes = []
     G = nx.DiGraph()
-    for root, dirs, files in os.walk('C:\\Users\\drola\\IdeaProjects\\apollo-master'):
+    for root, dirs, files in os.walk(EGDE_VAR):
         for file in files:
             file_name = os.path.join(root, file)
             if file_name.endswith('.java'):
@@ -48,8 +48,8 @@ def getEdges():
     return G.edges
 
 def networkGraph(EGDE_VAR):
-
-    edges = getEdges()
+    print('inputed: '+EGDE_VAR)
+    edges = getEdges(EGDE_VAR)
     G = nx.Graph()
     G.add_edges_from(edges)
     pos = nx.spring_layout(G)
@@ -66,7 +66,8 @@ def networkGraph(EGDE_VAR):
         edge_y.append(y0)
         edge_y.append(y1)
         edge_y.append(None)
-
+    print(edge_x)
+    print(edge_y)
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
         line=dict(color='black', width=1),
@@ -85,27 +86,29 @@ def networkGraph(EGDE_VAR):
         text.append(node)
 
     node_trace = go.Scatter(
-        x=node_x, y=node_y, text=text,
+        x=node_x, y=node_y,
+        text=text,
         mode='markers+text',
         showlegend=False,
         hoverinfo='none',
         marker=dict(
             color='pink',
-            size=50,
+            size=10,
             line=dict(color='black', width=1)))
 
     # layout
     layout = dict(plot_bgcolor='white',
                   paper_bgcolor='white',
-                  margin=dict(t=10, b=10, l=10, r=10, pad=0),
-                  xaxis=dict(linecolor='black',
-                             showgrid=False,
-                             showticklabels=False,
-                             mirror=True),
-                  yaxis=dict(linecolor='black',
-                             showgrid=False,
-                             showticklabels=False,
-                             mirror=True))
+                  # margin=dict(t=10, b=10, l=10, r=10, pad=0),
+                  # xaxis=dict(linecolor='black',
+                  #            showgrid=False,
+                  #            showticklabels=False,
+                  #            mirror=True),
+                  # yaxis=dict(linecolor='black',
+                  #            showgrid=False,
+                  #            showticklabels=False,
+                  #            mirror=True)
+                             )
 
     # figure
     fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
@@ -118,9 +121,9 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = 'Dash Networkx'
 
 app.layout = html.Div([
-        html.I('Write your EDGE_VAR'),
+        html.I('Input your project root path'),
         html.Br(),
-        dcc.Input(id='EGDE_VAR', type='text', value='K', debounce=True),
+        dcc.Input(id='EGDE_VAR', type='text', value='project path', debounce=True),
         dcc.Graph(id='my-graph'),
     ]
 )
