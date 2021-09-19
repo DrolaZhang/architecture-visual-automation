@@ -2,9 +2,7 @@ import javalang
 import os
 import networkx as nx
 from pyvis.network import Network
-
 from JavaClass import JavaClass
-
 nodes = []
 G = nx.DiGraph()
 
@@ -42,6 +40,7 @@ for root, dirs, files in os.walk('C:\\Users\\drola\\IdeaProjects\\apollo-master'
                             G.add_edge(current_node_name, depends_node_name)
 
 print(G.nodes)
-nt = Network('1000px', '1000px')
-nt.from_nx(G)
-nt.show('nx.html')
+print(G.edges)
+# nt = Network('1000px', '1000px')
+# # nt.from_nx(G)
+# # nt.show('nx.html')
